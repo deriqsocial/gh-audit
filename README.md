@@ -14,6 +14,7 @@ A fast CLI tool to audit your GitHub repositories for signs of unauthorized acce
 | **Suspicious Commits** | Commits from unlinked accounts, force pushes |
 | **Branch Protection** | Missing or weak protection on default branch |
 | **Secret Scanning** | Open alerts (if GitHub Advanced Security enabled) |
+| **Leaked Secrets** | Scans recent commits for API keys, tokens, passwords, private keys |
 
 ## Install
 
