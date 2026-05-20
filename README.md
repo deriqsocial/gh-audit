@@ -19,12 +19,9 @@ A fast CLI tool to audit your GitHub repositories for signs of unauthorized acce
 
 ```bash
 # Download and make executable
-curl -fsSL https://raw.githubusercontent.com/anthropics/gh-audit/main/gh-audit -o gh-audit
+curl -fsSL https://raw.githubusercontent.com/deriqsocial/gh-audit/main/gh-audit -o gh-audit
 chmod +x gh-audit
 sudo mv gh-audit /usr/local/bin/
-
-# Or just run it directly
-bash <(curl -fsSL https://raw.githubusercontent.com/anthropics/gh-audit/main/gh-audit) --all
 ```
 
 ## Requirements

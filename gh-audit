@@ -41,7 +41,6 @@ ${BOLD}Options:${NC}
   -o, --org ORG      Audit all repos in an organization
   -d, --days N       Look back N days (default: 7)
   -q, --quiet        Only show warnings and alerts
-  -j, --json         Output JSON report
   --no-color         Disable colored output
   -h, --help         Show this help
   -v, --version      Show version
@@ -61,7 +60,6 @@ EOF
 ALL=false
 ORG=""
 QUIET=false
-JSON=false
 REPOS=()
 
 while [[ $# -gt 0 ]]; do
@@ -72,7 +70,6 @@ while [[ $# -gt 0 ]]; do
     -o|--org) ORG="$2"; shift 2 ;;
     -d|--days) SINCE="$2"; shift 2 ;;
     -q|--quiet) QUIET=true; shift ;;
-    -j|--json) JSON=true; shift ;;
     --no-color) RED=""; YELLOW=""; GREEN=""; CYAN=""; BOLD=""; DIM=""; NC=""; shift ;;
     -*) echo "Unknown option: $1"; exit 1 ;;
     *) REPOS+=("$1"); shift ;;
@@ -81,6 +78,11 @@ done
 
 if ! command -v gh &>/dev/null; then
   echo "Error: GitHub CLI (gh) is required. Install: https://cli.github.com"
+  exit 1
+fi
+
+if ! command -v jq &>/dev/null; then
+  echo "Error: jq is required. Install: https://jqlang.github.io/jq/download/"
   exit 1
 fi
 
@@ -114,8 +116,6 @@ fi
 if [[ -n "$ORG" ]]; then
   while IFS= read -r line; do REPOS+=("$line"); done < <(gh repo list "$ORG" --limit 100 --json nameWithOwner -q '.[].nameWithOwner')
 fi
-
-JSON_RESULTS="[]"
 
 audit_repo() {
   local repo="$1"
@@ -275,10 +275,10 @@ audit_repo() {
 
 # --- Main ---
 echo -e "${BOLD}"
-echo "   ╔══════════════════════════════════════════╗"
-echo "   ║        gh-audit v${VERSION}                  ║"
-echo "   ║   GitHub Repository Security Audit       ║"
-echo "   ╚══════════════════════════════════════════╝"
+echo "   ╔════════════════════════════════════════════╗"
+echo "   ║         gh-audit v${VERSION}                   ║"
+echo "   ║    GitHub Repository Security Audit       ║"
+echo "   ╚════════════════════════════════════════════╝"
 echo -e "${NC}"
 echo -e "  Authenticated as: ${CYAN}${AUTHED_USER}${NC}"
 echo -e "  Lookback window:  ${SINCE} days (since ${SINCE_DATE})"
