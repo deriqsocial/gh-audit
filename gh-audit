@@ -288,7 +288,7 @@ audit_repo() {
     'xox[bpors]-[0-9a-zA-Z\-]{10,}'             # Slack token
     'npm_[0-9a-zA-Z]{36}'                        # npm token
     'snyk_[0-9a-f]{8,}'                          # Snyk token
-    'PRIVATE KEY-----'                           # Private keys
+    '-----BEGIN [A-Z ]* PRIVATE KEY-----'         # Private keys
     'password\s*[:=]\s*["\x27][^"\x27]{8,}'      # Hardcoded passwords
   )
   local combined_pattern=$(IFS='|'; echo "${secret_patterns[*]}")
@@ -299,7 +299,7 @@ audit_repo() {
       diff_output=$(gh api "repos/$repo/commits/$sha" -q '.files[].patch // empty' 2>/dev/null || true)
       if [[ -n "$diff_output" ]]; then
         local matches
-        matches=$(echo "$diff_output" | grep -oE "$combined_pattern" 2>/dev/null | head -10 || true)
+        matches=$(echo "$diff_output" | grep '^+' | grep -v '^+++' | grep -v 'grep\|regex\|pattern\|secret_patterns\|combined_pattern' | grep -oE "$combined_pattern" 2>/dev/null | head -10 || true)
         if [[ -n "$matches" ]]; then
           ((leaked++))
           local short_sha="${sha:0:8}"
